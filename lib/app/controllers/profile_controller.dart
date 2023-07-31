@@ -59,6 +59,7 @@ class ProfileController extends GetxController {
         "getCurrentUser",
         e.toString(),
       );
+      Get.offAllNamed("login");
     }
   }
 }

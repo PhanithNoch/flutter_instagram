@@ -1,12 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_instagram/app/models/comment_res_model.dart';
 import 'package:flutter_instagram/app/models/post_res_model.dart';
 import 'package:flutter_instagram/app/models/user_res_profile_model.dart';
+import 'package:get_storage/get_storage.dart';
 import 'dart:io';
 
 import '../models/login_res_model.dart';
 
 class APIHelper {
   final dio = Dio();
+  final box = GetStorage();
   // String baseUrl = "http://localhost:8000/api";
   String baseUrl = "http://10.0.2.2:8000/api";
 
@@ -59,6 +62,8 @@ class APIHelper {
       );
       if (response.statusCode == 200) {
         return LoginResModel.fromJson(response.data);
+      } else if (response.statusCode == 401) {
+        throw Exception("Unauthorized");
       } else {
         throw Exception("Failed to login");
       }
@@ -144,6 +149,119 @@ class APIHelper {
       }
     } catch (e) {
       throw Exception("Failed to login : $e");
+    }
+  }
+
+  Future<bool> likeToggle(
+      {required String token, required String postId}) async {
+    try {
+      final response = await dio.post(
+        "$baseUrl/toggleLike/$postId",
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+          followRedirects: false,
+          validateStatus: (status) {
+            return status! < 500;
+          },
+        ),
+      );
+      print("res $response");
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to login");
+      }
+    } catch (e) {
+      throw Exception("Failed to login : $e");
+    }
+  }
+
+  Future<CommentResModel> getCommentByPost({required int postId}) async {
+    try {
+      final token = box.read("access_token");
+      print("token $token");
+      final response = await dio.get(
+        "$baseUrl/comments/$postId",
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+          followRedirects: false,
+          validateStatus: (status) {
+            return status! < 500;
+          },
+        ),
+      );
+      print("res $response");
+      if (response.statusCode == 200) {
+        return CommentResModel.fromJson(response.data);
+      } else {
+        throw Exception("Failed to get comment");
+      }
+    } catch (e) {
+      throw Exception("Failed to get comment : $e");
+    }
+  }
+
+  Future<String> comment(
+      {required String postId, required String comment}) async {
+    try {
+      final token = box.read("access_token");
+
+      final response = await dio.post(
+        "$baseUrl/comment/$postId",
+        data: {"text": comment},
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+          followRedirects: false,
+          validateStatus: (status) {
+            return status! < 500;
+          },
+        ),
+      );
+      print("res $response");
+      if (response.statusCode == 200) {
+        return "Success comment";
+      } else {
+        throw Exception("Failed to login");
+      }
+    } catch (e) {
+      throw Exception("Failed to login : $e");
+    }
+  }
+
+  Future<bool> deleteComment({required String cmtId}) async {
+    try {
+      final token = box.read("access_token");
+
+      final res = await dio.delete(
+        "$baseUrl/comment/$cmtId",
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+          followRedirects: false,
+          validateStatus: (status) {
+            return status! < 500;
+          },
+        ),
+      );
+      print("res $res");
+      if (res.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to delete comment");
+      }
+    } catch (e) {
+      throw Exception("Failed to delete comment : $e");
     }
   }
 }

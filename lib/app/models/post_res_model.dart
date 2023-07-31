@@ -21,7 +21,7 @@ class PostResModel {
 
 class PostData {
   int? currentPage;
-  List<Data>? data;
+  List<DataPost>? data;
   String? firstPageUrl;
   int? from;
   int? lastPage;
@@ -52,9 +52,9 @@ class PostData {
   PostData.fromJson(Map<String, dynamic> json) {
     currentPage = json['current_page'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <DataPost>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new DataPost.fromJson(v));
       });
     }
     firstPageUrl = json['first_page_url'];
@@ -98,7 +98,7 @@ class PostData {
   }
 }
 
-class Data {
+class DataPost {
   int? id;
   String? title;
   dynamic body;
@@ -114,7 +114,7 @@ class Data {
   List<Likes>? likes;
   List<Comments>? comments;
 
-  Data(
+  DataPost(
       {this.id,
       this.title,
       this.body,
@@ -130,7 +130,7 @@ class Data {
       this.likes,
       this.comments});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  DataPost.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     body = json['body'];
