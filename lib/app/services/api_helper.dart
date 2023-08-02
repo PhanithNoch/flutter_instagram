@@ -264,4 +264,37 @@ class APIHelper {
       throw Exception("Failed to delete comment : $e");
     }
   }
+
+  Future<String> createPost(
+      {required String caption, required File photo}) async {
+    try {
+      final token = box.read("access_token");
+      var _formData = FormData.fromMap({
+        "title": caption,
+        "photo": await MultipartFile.fromFile(photo.path,
+            filename: photo.path.split("/").last),
+      });
+      final response = await dio.post(
+        "$baseUrl/post",
+        data: _formData,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+          followRedirects: false,
+          validateStatus: (status) {
+            return status! < 500;
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        return "Post created";
+      } else {
+        throw Exception("Failed to login");
+      }
+    } catch (e) {
+      throw Exception("Failed to login : $e");
+    }
+  }
 }

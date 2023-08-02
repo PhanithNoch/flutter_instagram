@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_instagram/app/models/comment_res_model.dart';
 import 'package:flutter_instagram/app/models/post_res_model.dart';
 import 'package:flutter_instagram/app/services/api_helper.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostController extends GetxController {
   final api = APIHelper();
@@ -12,6 +14,8 @@ class PostController extends GetxController {
   PostResModel _posts = PostResModel();
   CommentResModel comments = CommentResModel();
   int? currentPostId;
+  final _imagePicker = ImagePicker();
+  File? photoPost;
 
   /// get,set posts
   List<DataPost> get posts => _posts.data?.data ?? [];
@@ -111,6 +115,35 @@ class PostController extends GetxController {
     } catch (e) {
       Get.snackbar(
         "deleteComment",
+        e.toString(),
+      );
+    }
+  }
+
+  void selectPostPhoto() async {
+    try {
+      final pickedFile =
+          await _imagePicker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        photoPost = File(pickedFile.path);
+        update();
+        print("photo profile selected");
+      } else {
+        print("no photo profile selected");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void createPost({required String caption}) async {
+    try {
+      final res = await api.createPost(caption: caption, photo: photoPost!);
+      print("create post ${jsonEncode(res)}");
+      Get.back(result: true);
+    } catch (e) {
+      Get.snackbar(
+        "createPost",
         e.toString(),
       );
     }

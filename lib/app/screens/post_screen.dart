@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram/app/constant/constant.dart';
 import 'package:flutter_instagram/app/controllers/post_controller.dart';
+import 'package:flutter_instagram/app/controllers/profile_controller.dart';
+import 'package:flutter_instagram/app/screens/select_photo_screen.dart';
 import 'package:flutter_instagram/app/screens/show_comment_screen.dart';
 import 'package:flutter_instagram/app/utils/date_util.dart';
 import 'package:get/get.dart';
@@ -16,6 +18,131 @@ class PostScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
+            GetBuilder<ProfileController>(
+              init: ProfileController(),
+              builder: (con) {
+                if (con.isLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                print("$displayProfile/${con.currentUser.profileUrl}");
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 25.0,
+                        backgroundImage: NetworkImage(
+                            "$displayProfile/${con.currentUser.profileUrl}"),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      const Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: "What's on your mind?",
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Get.dialog(
+                      SelectPhotoScreen(),
+                    ).then((value) {
+                      if (value != null) {
+                        controller.getAllPosts();
+                      }
+                    });
+                    // Get.to(
+                    //   () => SelectPhotoScreen(),
+                    //   transition: Transition.rightToLeft,
+                    // );
+                  },
+                  child: Container(
+                    height: 40,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Icon(
+                            Icons.photo,
+                            color: Colors.white,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            "Photo",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Container(
+                  height: 40,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                      child: Row(
+                    children: [
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Icon(
+                        Icons.video_call,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Live",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  )),
+                ),
+              ],
+            ),
+            Divider(
+              thickness: 1,
+            ),
             GetBuilder<PostController>(
               builder: (_) {
                 if (controller.isLoading) {
