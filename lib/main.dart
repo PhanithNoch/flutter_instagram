@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram/app/bindings/home_binding.dart';
+import 'package:flutter_instagram/app/bindings/internet_binding.dart';
 import 'package:flutter_instagram/app/bindings/login_binding.dart';
 import 'package:flutter_instagram/app/screens/home_screen.dart';
+import 'package:flutter_instagram/app/services/connectivity_service.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -21,7 +23,9 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: "home",
-      // initialBinding: LoginBinding(),
+      initialBinding: BindingsBuilder(() {
+        Get.put(Connectivity());
+      }),
       getPages: [
         GetPage(
           name: "/login",

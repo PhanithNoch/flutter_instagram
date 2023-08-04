@@ -15,202 +15,309 @@ class PostScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            GetBuilder<ProfileController>(
-              init: ProfileController(),
-              builder: (con) {
-                if (con.isLoading) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                print("$displayProfile/${con.currentUser.profileUrl}");
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 25.0,
-                        backgroundImage: NetworkImage(
-                            "$displayProfile/${con.currentUser.profileUrl}"),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      const Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: "What's on your mind?",
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Get.dialog(
-                      SelectPhotoScreen(),
-                    ).then((value) {
-                      if (value != null) {
-                        controller.getAllPosts();
-                      }
-                    });
-                    // Get.to(
-                    //   () => SelectPhotoScreen(),
-                    //   transition: Transition.rightToLeft,
-                    // );
-                  },
-                  child: Container(
-                    height: 40,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Icon(
-                            Icons.photo,
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            "Photo",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Container(
-                  height: 40,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                      child: Row(
-                    children: [
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Icon(
-                        Icons.video_call,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "Live",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  )),
-                ),
-              ],
-            ),
-            Divider(
-              thickness: 1,
-            ),
-            GetBuilder<PostController>(
-              builder: (_) {
-                if (controller.isLoading) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (controller.posts.isEmpty) {
-                  return Center(
-                    child: Text("No posts"),
-                  );
-                }
-                return Expanded(
-                  child: ListView.builder(
-                    key: PageStorageKey("post"),
-                    itemCount: controller.posts.length,
-                    itemBuilder: (context, index) {
-                      final post = controller.posts[index];
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  "${displayProfile}/${post.user!.profileUrl}"),
-                            ),
-                            title: Text("${post.user!.name}"),
-                            subtitle: Text(
-                                "${DateUtil.convertToAgo(DateTime.parse(post.createdAt!))}"),
-                            trailing: IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.more_horiz),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text("${post.title}"),
-                          ),
-                          SizedBox(height: 10),
-                          post.imageUrl != null
-                              ? Image.network(
-                                  "${displayPost}/${post.imageUrl}",
-                                  width: double.infinity,
-                                  height: 300,
-                                  fit: BoxFit.cover,
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(10),
+        body: SafeArea(
+      child: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          print("innerBoxIsScrolled $innerBoxIsScrolled");
+          return [
+            SliverAppBar(
+              expandedHeight: 150.0,
+              backgroundColor: Colors.white,
+              floating: false,
+              pinned: true,
+              actions: [],
+              flexibleSpace: FlexibleSpaceBar(
+                title: innerBoxIsScrolled
+                    ? Text(
+                        "Post",
+                        style: TextStyle(color: Colors.black),
+                      )
+                    : null,
+                background: GetBuilder<ProfileController>(
+                  // init: ProfileController(),
+                  builder: (con) {
+                    if (con.isLoading) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    print("$displayProfile/${con.currentUser.profileUrl}");
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          child: Row(
+                            children: [
+                              con.currentUser.profileUrl == null ||
+                                      con.currentUser.profileUrl == ""
+                                  ? CircleAvatar(
+                                      radius: 25.0,
+                                      backgroundColor: Colors.grey,
+                                    )
+                                  : CircleAvatar(
+                                      radius: 25.0,
+                                      backgroundImage: NetworkImage(
+                                          "$displayProfile/${con.currentUser.profileUrl}"),
+                                    ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              const Expanded(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    hintText: "What's on your mind?",
+                                    border: InputBorder.none,
                                   ),
-                                  width: double.infinity,
-                                  height: 300,
-                                  child: Text("No image"),
-                                  alignment: Alignment.center,
                                 ),
-                          SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Get.dialog(
+                                  SelectPhotoScreen(),
+                                ).then((value) {
+                                  if (value != null) {
+                                    controller.getAllPosts();
+                                  }
+                                });
+                                // Get.to(
+                                //   () => SelectPhotoScreen(),
+                                //   transition: Transition.rightToLeft,
+                                // );
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Icon(
+                                        Icons.photo,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Photo",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Container(
+                              height: 40,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                  child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Icon(
+                                    Icons.video_call,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Live",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                            ),
+                          ],
+                        ),
+                        Divider(
+                          thickness: 1,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ];
+        },
+        body: Center(
+          child: Column(
+            children: [
+              GetBuilder<PostController>(
+                builder: (_) {
+                  if (controller.isLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (controller.posts.isEmpty) {
+                    return Center(
+                      child: Text("No posts"),
+                    );
+                  }
+                  return Expanded(
+                    child: ListView.builder(
+                      key: PageStorageKey("post"),
+                      itemCount: controller.posts.length,
+                      itemBuilder: (context, index) {
+                        final post = controller.posts[index];
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              leading: post.user!.profileUrl != null
+                                  ? CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          "${displayProfile}/${post.user!.profileUrl}"),
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: Colors.grey,
+                                      child: Text("A"),
+                                    ),
+                              title: Text("${post.user!.name}"),
+                              subtitle: Text(
+                                  "${DateUtil.convertToAgo(DateTime.parse(post.createdAt!))}"),
+                              trailing: PopupMenuButton<String>(
+                                // Callback that sets the selected popup menu item.
+                                onSelected: (String item) {
+                                  if (item == "update") {
+                                    controller.currentPostId = post.id;
+                                    // controller.updatePost();
+                                  } else {
+                                    controller.deletePost(
+                                        postId: post.id.toString());
+                                  }
+                                },
+
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                  const PopupMenuItem<String>(
+                                    value: "update",
+                                    child: Text('Update'),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: "delete",
+                                    child: Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text("${post.title}"),
+                            ),
+                            SizedBox(height: 10),
+                            post.imageUrl != null
+                                ? Image.network(
+                                    "${displayPost}/${post.imageUrl}",
+                                    width: double.infinity,
+                                    height: 300,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    width: double.infinity,
+                                    height: 300,
+                                    child: Text("No image"),
+                                    alignment: Alignment.center,
+                                  ),
+                            SizedBox(height: 10),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "${post.likesCount} likes",
+                                    style: style,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      if (post.commentsCount == 0) return;
+                                      controller.currentPostId = post.id;
+                                      controller.getComment(
+                                        postId: post.id!,
+                                      );
+                                      // Get.to(() => ShowCommentScreen());
+                                      // show ShowCommentScreen as bottom sheet
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) {
+                                          return ShowCommentScreen();
+                                        },
+                                      );
+                                    },
+                                    child: Text(
+                                      "${post.commentsCount} Comments",
+                                      style: style,
+                                    ),
+                                  ),
+                                  Text(
+                                    "20 Shares",
+                                    style: style,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Divider(
+                              thickness: 1,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Text(
-                                  "${post.likesCount} likes",
-                                  style: style,
+                                IconButton(
+                                  onPressed: () {
+                                    controller.likeToggle(
+                                      postId: post.id.toString(),
+                                    );
+                                  },
+                                  icon: post.liked!
+                                      ? Icon(
+                                          Icons.thumb_up,
+                                          color: Colors.blue,
+                                        )
+                                      : Icon(Icons.thumb_up_outlined),
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    if (post.commentsCount == 0) return;
+                                IconButton(
+                                  onPressed: () {
                                     controller.currentPostId = post.id;
                                     controller.getComment(
                                       postId: post.id!,
@@ -224,70 +331,25 @@ class PostScreen extends StatelessWidget {
                                       },
                                     );
                                   },
-                                  child: Text(
-                                    "${post.commentsCount} Comments",
-                                    style: style,
-                                  ),
+                                  icon: Icon(Icons.comment),
                                 ),
-                                Text(
-                                  "20 Shares",
-                                  style: style,
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.share),
                                 ),
                               ],
                             ),
-                          ),
-                          Divider(
-                            thickness: 1,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  controller.likeToggle(
-                                    postId: post.id.toString(),
-                                  );
-                                },
-                                icon: post.liked!
-                                    ? Icon(
-                                        Icons.thumb_up,
-                                        color: Colors.blue,
-                                      )
-                                    : Icon(Icons.thumb_up_outlined),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  controller.currentPostId = post.id;
-                                  controller.getComment(
-                                    postId: post.id!,
-                                  );
-                                  // Get.to(() => ShowCommentScreen());
-                                  // show ShowCommentScreen as bottom sheet
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) {
-                                      return ShowCommentScreen();
-                                    },
-                                  );
-                                },
-                                icon: Icon(Icons.comment),
-                              ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.share),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                );
-              },
-            )
-          ],
+                          ],
+                        );
+                      },
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
         ),
       ),
-    );
+    ));
   }
 }

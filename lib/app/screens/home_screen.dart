@@ -8,15 +8,12 @@ import '../controllers/profile_controller.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
-  final controller = Get.put(ProfileController());
+  // final controller = Get.put(ProfileController());
   final postController = Get.put(PostController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("News Feeds"),
-      ),
       body: GetBuilder<HomeController>(builder: (controller) {
         if (controller.authenticated == false) {
           return LoginScreen();

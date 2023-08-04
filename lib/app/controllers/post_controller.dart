@@ -148,4 +148,18 @@ class PostController extends GetxController {
       );
     }
   }
+
+  void deletePost({required String postId}) async {
+    try {
+      final res = await api.deletePost(postId: postId);
+      print("delete post ${jsonEncode(res)}");
+      getAllPosts();
+      Get.back(result: true);
+    } catch (e) {
+      Get.snackbar(
+        "deletePost",
+        e.toString(),
+      );
+    }
+  }
 }

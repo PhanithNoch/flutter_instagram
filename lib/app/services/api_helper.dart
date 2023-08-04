@@ -297,4 +297,32 @@ class APIHelper {
       throw Exception("Failed to login : $e");
     }
   }
+
+  Future<bool> deletePost({required String postId}) async {
+    try {
+      final token = box.read("access_token");
+
+      final res = await dio.delete(
+        "$baseUrl/post/$postId",
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer $token",
+          },
+          followRedirects: false,
+          validateStatus: (status) {
+            return status! < 500;
+          },
+        ),
+      );
+      print("res $res");
+      if (res.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to delete comment");
+      }
+    } catch (e) {
+      throw Exception("Failed to delete comment : $e");
+    }
+  }
 }
