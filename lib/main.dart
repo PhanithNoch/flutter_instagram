@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_instagram/app/bindings/home_binding.dart';
-import 'package:flutter_instagram/app/bindings/internet_binding.dart';
-import 'package:flutter_instagram/app/bindings/login_binding.dart';
-import 'package:flutter_instagram/app/screens/home_screen.dart';
-import 'package:flutter_instagram/app/services/connectivity_service.dart';
+import 'package:flutter_instagram/app/services/storage_helper.dart';
+import 'package:flutter_instagram/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
-import 'app/screens/login_screen.dart';
-import 'app/screens/register_screen.dart';
 
 void main() async {
   await GetStorage.init();
@@ -24,17 +18,9 @@ class Home extends StatelessWidget {
     return GetMaterialApp(
       initialRoute: "home",
       initialBinding: BindingsBuilder(() {
-        Get.put(Connectivity());
+        Get.put(StorageHelper(), permanent: true);
       }),
-      getPages: [
-        GetPage(
-          name: "/login",
-          page: () => LoginScreen(),
-        ),
-        GetPage(name: "/register", page: () => RegisterScreen()),
-        GetPage(
-            name: "/home", page: () => HomeScreen(), binding: HomeBinding()),
-      ],
+      getPages: AppRoutes.lstPages,
     );
   }
 }

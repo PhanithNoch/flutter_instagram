@@ -4,6 +4,7 @@ import 'package:flutter_instagram/app/screens/register_screen.dart';
 import 'package:get/get.dart';
 
 class LoginScreen extends StatelessWidget {
+  static const routeName = "/login";
   LoginScreen({super.key});
   final _formKey = GlobalKey<FormState>();
   final emailCon = TextEditingController(text: "apple@gmail.com");

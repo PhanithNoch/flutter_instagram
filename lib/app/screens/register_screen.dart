@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../controllers/register_controller.dart';
 
 class RegisterScreen extends StatelessWidget {
+  static const String routeName = "/register";
   RegisterScreen({super.key});
   final controller = Get.put(RegisterController());
   final _formKey = GlobalKey<FormState>();
