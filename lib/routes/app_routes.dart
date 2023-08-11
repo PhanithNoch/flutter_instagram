@@ -1,3 +1,4 @@
+import 'package:flutter_instagram/app/bindings/auth_binding.dart';
 import 'package:flutter_instagram/app/bindings/home_binding.dart';
 import 'package:flutter_instagram/app/middleware/login_middleware.dart';
 import 'package:flutter_instagram/app/screens/home_screen.dart';
@@ -10,8 +11,13 @@ class AppRoutes {
     GetPage(
       name: LoginScreen.routeName,
       page: () => LoginScreen(),
+      binding: AuthBinding(),
     ),
-    GetPage(name: RegisterScreen.routeName, page: () => RegisterScreen()),
+    GetPage(
+      name: RegisterScreen.routeName,
+      page: () => RegisterScreen(),
+      binding: AuthBinding(),
+    ),
     GetPage(
       name: HomeScreen.routeName,
       page: () => HomeScreen(),

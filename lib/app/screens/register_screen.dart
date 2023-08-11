@@ -1,12 +1,11 @@
+import 'package:flutter_instagram/app/controllers/auth_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-
-import '../controllers/register_controller.dart';
 
 class RegisterScreen extends StatelessWidget {
   static const String routeName = "/register";
   RegisterScreen({super.key});
-  final controller = Get.put(RegisterController());
+  final controller = Get.find<AuthController>();
   final _formKey = GlobalKey<FormState>();
   final nameCon = TextEditingController();
   final emailCon = TextEditingController();
@@ -30,7 +29,7 @@ class RegisterScreen extends StatelessWidget {
                   Spacer(),
 
                   /// add widget to select photo profile from gallery.
-                  GetBuilder<RegisterController>(builder: (context) {
+                  GetBuilder<AuthController>(builder: (context) {
                     if (controller.photoProfile != null) {
                       return Stack(
                         children: [

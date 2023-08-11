@@ -177,6 +177,9 @@ class PostScreen extends StatelessWidget {
           child: Column(
             children: [
               GetBuilder<PostController>(
+                initState: (_) {
+                  controller.getAllPosts();
+                },
                 builder: (_) {
                   if (controller.isLoading) {
                     return Center(child: CircularProgressIndicator());
@@ -200,15 +203,15 @@ class PostScreen extends StatelessWidget {
                               leading: post.user!.profileUrl != null
                                   ? CircleAvatar(
                                       backgroundImage: NetworkImage(
-                                          "${displayProfile}/${post.user!.profileUrl}"),
+                                          "$displayProfile/${post.user!.profileUrl}"),
                                     )
-                                  : CircleAvatar(
+                                  : const CircleAvatar(
                                       backgroundColor: Colors.grey,
                                       child: Text("A"),
                                     ),
                               title: Text("${post.user!.name}"),
-                              subtitle: Text(
-                                  "${DateUtil.convertToAgo(DateTime.parse(post.createdAt!))}"),
+                              subtitle: Text(DateUtil.convertToAgo(
+                                  DateTime.parse(post.createdAt!))),
                               trailing: PopupMenuButton<String>(
                                 // Callback that sets the selected popup menu item.
                                 onSelected: (String item) {
@@ -217,7 +220,8 @@ class PostScreen extends StatelessWidget {
                                     // controller.updatePost();
                                   } else {
                                     controller.deletePost(
-                                        postId: post.id.toString());
+                                      postId: post.id.toString(),
+                                    );
                                   }
                                 },
 
@@ -242,7 +246,7 @@ class PostScreen extends StatelessWidget {
                             SizedBox(height: 10),
                             post.imageUrl != null
                                 ? Image.network(
-                                    "${displayPost}/${post.imageUrl}",
+                                    "$displayPost/${post.imageUrl}",
                                     width: double.infinity,
                                     height: 300,
                                     fit: BoxFit.cover,

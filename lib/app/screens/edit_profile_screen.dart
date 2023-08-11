@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_instagram/app/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
+import '../constant/constant.dart';
+
 class EditProfileScreen extends StatelessWidget {
   EditProfileScreen({super.key});
   final controller = Get.find<ProfileController>();
@@ -10,7 +12,7 @@ class EditProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Profile"),
+        title: const Text("Edit Profile"),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -25,6 +27,7 @@ class EditProfileScreen extends StatelessWidget {
               _emailController.text = controller.currentUser.email!;
               return Column(
                 children: [
+                  Text("${controller.currentUser.profileUrl}"),
                   SizedBox(
                     height: Get.height * 0.05,
                   ),
@@ -33,15 +36,14 @@ class EditProfileScreen extends StatelessWidget {
                       CircleAvatar(
                         radius: 60.0,
                         backgroundImage: NetworkImage(
-                            "${controller.currentUser.profileUrl}"),
+                          "${displayProfile}/${controller.currentUser.profileUrl}",
+                        ),
                       ),
                       Positioned(
                         bottom: 0.0,
                         right: 1.0,
                         child: GestureDetector(
-                          onTap: () {
-                            print("pressed");
-                          },
+                          onTap: () {},
                           child: Container(
                             height: 40,
                             width: 40,

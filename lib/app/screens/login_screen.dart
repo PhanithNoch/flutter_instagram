@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_instagram/app/controllers/login_controller.dart';
+import 'package:flutter_instagram/app/controllers/auth_controller.dart';
 import 'package:flutter_instagram/app/screens/register_screen.dart';
 import 'package:get/get.dart';
 
@@ -7,9 +7,9 @@ class LoginScreen extends StatelessWidget {
   static const routeName = "/login";
   LoginScreen({super.key});
   final _formKey = GlobalKey<FormState>();
-  final emailCon = TextEditingController(text: "apple@gmail.com");
+  final emailCon = TextEditingController(text: "dara@gmail.com");
   final passwordCon = TextEditingController(text: "123123");
-  final _controller = Get.put(LoginController());
+  final _controller = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   Spacer(),
                   // SizedBox(height: Get.height * 0.1),
-                  Text(
+                  const Text(
                     "WELCOME TO LOGIN SCREEN",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                   ),

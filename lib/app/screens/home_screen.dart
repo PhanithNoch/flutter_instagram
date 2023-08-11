@@ -6,17 +6,19 @@ import 'package:get/get.dart';
 class HomeScreen extends StatelessWidget {
   static const routeName = "/home";
   HomeScreen({super.key});
-  final postController = Get.put(PostController());
+  final postController = Get.find<PostController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GetBuilder<HomeController>(builder: (controller) {
-        return IndexedStack(
-          index: controller.currentIndex,
-          children: controller.lstScreens,
-        );
-      }),
+      body: GetBuilder<HomeController>(
+        builder: (controller) {
+          return IndexedStack(
+            index: controller.currentIndex,
+            children: controller.lstScreens,
+          );
+        },
+      ),
       bottomNavigationBar: GetBuilder<HomeController>(builder: (controller) {
         return BottomNavigationBar(
           currentIndex: controller.currentIndex,

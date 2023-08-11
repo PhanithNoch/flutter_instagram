@@ -23,7 +23,7 @@ class PostController extends GetxController {
 
   @override
   void onInit() {
-    getAllPosts();
+    // getAllPosts();
     super.onInit();
   }
 
@@ -32,10 +32,7 @@ class PostController extends GetxController {
     isLoading = true;
     update();
     try {
-      final token = box.read("access_token");
-      print("token $token");
-      final res = await api.getAllPost(token: token);
-      print("All posts ${jsonEncode(res)}");
+      final res = await api.getAllPost();
       _posts = res;
       isLoading = false;
       update();
@@ -138,8 +135,8 @@ class PostController extends GetxController {
 
   void createPost({required String caption}) async {
     try {
-      final res = await api.createPost(caption: caption, photo: photoPost!);
-      print("create post ${jsonEncode(res)}");
+      await api.createPost(caption: caption, photo: photoPost!);
+      // print("create post ${jsonEncode(res)}");
       Get.back(result: true);
     } catch (e) {
       Get.snackbar(

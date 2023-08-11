@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_instagram/app/constant/constant.dart';
 import 'package:flutter_instagram/app/models/comment_res_model.dart';
 import 'package:flutter_instagram/app/models/post_res_model.dart';
 import 'package:flutter_instagram/app/models/user_res_profile_model.dart';
+import 'package:flutter_instagram/app/services/storage_helper.dart';
 import 'package:get_storage/get_storage.dart';
 import 'dart:io';
 
@@ -11,7 +13,8 @@ class APIHelper {
   final dio = Dio();
   final box = GetStorage();
   // String baseUrl = "http://localhost:8000/api";
-  String baseUrl = "http://10.0.2.2:8000/api";
+  // String baseUrl = "http://10.0.2.2:8000/api"; // android emulator
+  // String baseUrl = baseURL;
 
   Future<String> registerUser({
     required String name,
@@ -19,16 +22,18 @@ class APIHelper {
     required String password,
     File? profile,
   }) async {
-    var _formData = FormData.fromMap({
-      "name": name,
-      "email": email,
-      "password": password,
-      "password_confirmation": password,
-      "profile":
-          profile != null ? await MultipartFile.fromFile(profile.path) : null,
-    });
+    var _formData = FormData.fromMap(
+      {
+        "name": name,
+        "email": email,
+        "password": password,
+        "password_confirmation": password,
+        "profile":
+            profile != null ? await MultipartFile.fromFile(profile.path) : null,
+      },
+    );
     final response = await dio.post(
-      "$baseUrl/auth/register",
+      "$baseURL/auth/register",
       data: _formData,
       options: Options(
         headers: {"Accept": "application/json"},
@@ -50,7 +55,7 @@ class APIHelper {
       {required String email, required String password}) async {
     try {
       final response = await dio.post(
-        "$baseUrl/auth/login",
+        "$baseURL/auth/login",
         data: {"email": email, "password": password},
         options: Options(
           headers: {"Accept": "application/json"},
@@ -75,7 +80,7 @@ class APIHelper {
   Future<String> logout({required String accessToken}) async {
     try {
       final res = await dio.post(
-        "$baseUrl/auth/logout",
+        "$baseURL/auth/logout",
         options: Options(
           headers: {
             "Accept": "application/json",
@@ -87,8 +92,6 @@ class APIHelper {
           },
         ),
       );
-      print("logout : ${res.data}");
-      print("logout : ${res.statusCode}");
       if (res.statusCode == 200) {
         return "Success logout";
       } else if (res.statusCode == 401) {
@@ -104,7 +107,7 @@ class APIHelper {
   Future<UserProfileResModel> getCurrentUser({required String token}) async {
     try {
       final response = await dio.get(
-        "$baseUrl/auth/me",
+        "$baseURL/auth/me",
         options: Options(
           headers: {
             "Accept": "application/json",
@@ -126,10 +129,12 @@ class APIHelper {
     }
   }
 
-  Future<PostResModel> getAllPost({required String token}) async {
+  Future<PostResModel> getAllPost() async {
     try {
+      final token = StorageHelper.read(kTokenKey);
+      print("token $token");
       final response = await dio.get(
-        "$baseUrl/posts",
+        "$baseURL/posts",
         options: Options(
           headers: {
             "Accept": "application/json",
@@ -168,7 +173,6 @@ class APIHelper {
           },
         ),
       );
-      print("res $response");
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -181,7 +185,7 @@ class APIHelper {
 
   Future<CommentResModel> getCommentByPost({required int postId}) async {
     try {
-      final token = box.read("access_token");
+      final token = StorageHelper.read(kTokenKey);
       print("token $token");
       final response = await dio.get(
         "$baseUrl/comments/$postId",
@@ -210,7 +214,7 @@ class APIHelper {
   Future<String> comment(
       {required String postId, required String comment}) async {
     try {
-      final token = box.read("access_token");
+      final token = StorageHelper.read(kTokenKey);
 
       final response = await dio.post(
         "$baseUrl/comment/$postId",
@@ -239,7 +243,7 @@ class APIHelper {
 
   Future<bool> deleteComment({required String cmtId}) async {
     try {
-      final token = box.read("access_token");
+      final token = StorageHelper.read(kTokenKey);
 
       final res = await dio.delete(
         "$baseUrl/comment/$cmtId",
@@ -268,15 +272,15 @@ class APIHelper {
   Future<String> createPost(
       {required String caption, required File photo}) async {
     try {
-      final token = box.read("access_token");
-      var _formData = FormData.fromMap({
+      final token = StorageHelper.read(kTokenKey);
+      var formData = FormData.fromMap({
         "title": caption,
         "photo": await MultipartFile.fromFile(photo.path,
             filename: photo.path.split("/").last),
       });
       final response = await dio.post(
         "$baseUrl/post",
-        data: _formData,
+        data: formData,
         options: Options(
           headers: {
             "Accept": "application/json",
@@ -300,7 +304,7 @@ class APIHelper {
 
   Future<bool> deletePost({required String postId}) async {
     try {
-      final token = box.read("access_token");
+      final token = StorageHelper.read(kTokenKey);
 
       final res = await dio.delete(
         "$baseUrl/post/$postId",
@@ -315,7 +319,6 @@ class APIHelper {
           },
         ),
       );
-      print("res $res");
       if (res.statusCode == 200) {
         return true;
       } else {
